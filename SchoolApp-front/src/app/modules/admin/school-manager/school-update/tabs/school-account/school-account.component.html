@@ -1,0 +1,186 @@
+<form
+    [formGroup]="schoolForm"
+    #schoolFormNgForm="ngForm"
+    class="flex flex-col"
+    enctype="multipart/form-data"
+>
+    <div class="grid grid-cols-1 gap-x-4 md:grid-cols-2 xl:grid-cols-3">
+        <div
+            class="group relative mb-6 flex flex-auto sm:col-span-2 xl:col-span-3"
+        >
+            <div
+                class="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-2 border-primary-500 object-cover sm:h-40 sm:w-40"
+            >
+                <!-- Upload / Remove avatar -->
+                @if (!readOnly()) {
+                    <div
+                        class="absolute bottom-0 left-0 right-0 z-10 h-1/2 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:h-2/6"
+                    >
+                        <div
+                            class="absolute bottom-0 left-0 right-0 z-20 mt-4 flex items-center justify-center pb-2"
+                        >
+                            <div>
+                                <label
+                                    class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-hover"
+                                    for="avatar-file-input"
+                                    matRipple
+                                >
+                                    <input
+                                        id="avatar-file-input"
+                                        class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
+                                        type="file"
+                                        accept="image/jpeg, image/png"
+                                        (change)="onFileSelected($event)"
+                                    />
+                                    <mat-icon
+                                        class="text-white icon-size-6"
+                                        svgIcon="heroicons_outline:camera"
+                                    ></mat-icon>
+                                </label>
+                            </div>
+                            <div>
+                                <button
+                                    mat-icon-button
+                                    (click)="removeAvatar()"
+                                >
+                                    <mat-icon
+                                        class="text-white icon-size-6"
+                                        svgIcon="heroicons_outline:trash"
+                                    ></mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- Image/Letter -->
+                @if (this.fullSchool()) {
+                    <img
+                        class="h-full w-full overflow-hidden object-cover"
+                        [src]="
+                            this.fullSchool().avatar || 'images/no-image.png'
+                        "
+                    />
+                }
+            </div>
+        </div>
+
+        <mat-form-field
+            class="gt-xs:pr-3 col-span-2 flex-auto text-lg md:text-xl"
+        >
+            <mat-label>Name</mat-label>
+            <input
+                matInput
+                formControlName="fullName"
+                [readonly]="readOnly()"
+            />
+            <mat-error *ngIf="schoolForm.get('fullName').hasError('required')">
+                Full name is required
+            </mat-error>
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                [svgIcon]="'mat_outline:short_text'"
+            ></mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>Tax Document</mat-label>
+            <input
+                matInput
+                placeholder="00.000.000/0001-00"
+                formControlName="taxDocument"
+                mask="00.000.000/0001-00"
+                [readonly]="readOnly()"
+            />
+            <mat-error
+                *ngIf="schoolForm.get('taxDocument').hasError('required')"
+            >
+                Tax document is required
+            </mat-error>
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                svgIcon="heroicons_outline:finger-print"
+            ></mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" [readonly]="readOnly()" />
+            <mat-error *ngIf="schoolForm.get('email').hasError('email')">
+                Email is invalid
+            </mat-error>
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                [svgIcon]="'mat_outline:email'"
+            ></mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="col-span-2 flex-auto text-lg md:text-xl">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" [readonly]="readOnly()" />
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                svgIcon="mat_outline:home"
+            ></mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>Phone Number</mat-label>
+            <input
+                matInput
+                placeholder="(xx) xxxxx-xxxx"
+                formControlName="phoneNumber"
+                [readonly]="readOnly()"
+            />
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                svgIcon="mat_outline:phone_iphone"
+            ></mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+                <mat-option
+                    *ngFor="let option of statusOptions"
+                    [value]="option.key"
+                    [disabled]="readOnly()"
+                >
+                    {{ option.value }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div class="-mx-8 mt-8 flex items-center justify-end border-t px-8 py-5">
+        <div class="mt-1.5 inline-flex w-full items-end justify-end">
+            <button
+                class="ml-3 px-6"
+                mat-raised-button
+                color="accent"
+                [routerLink]="['/admin/school']"
+            >
+                Back
+            </button>
+            @if (!readOnly()) {
+                <button
+                    (click)="save()"
+                    [disabled]="schoolForm.invalid || schoolForm.disabled"
+                    class="ml-3 px-6 text-white"
+                    mat-raised-button
+                    color="primary"
+                >
+                    <mat-icon
+                        class="text-secondary icon-size-5"
+                        svgIcon="heroicons_solid:check"
+                    ></mat-icon
+                    >Save
+                </button>
+            }
+        </div>
+    </div>
+</form>

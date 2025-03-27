@@ -1,0 +1,91 @@
+<div class="flex min-w-0 flex-auto flex-col">
+    <!-- Header -->
+    <div
+        class="flex flex-0 flex-col border-b bg-slate-50 p-6 dark:bg-transparent sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8"
+    >
+        <div class="min-w-0 flex-1">
+            <!-- Breadcrumbs -->
+            <div>
+                <div class="hidden flex-wrap items-center font-medium sm:flex">
+                    <div>
+                        <a
+                            [routerLink]="['/']"
+                            class="text-secondary whitespace-nowrap font-bold"
+                            >Home</a
+                        >
+                    </div>
+                    <div class="ml-1 flex items-center whitespace-nowrap">
+                        <mat-icon
+                            class="text-secondary icon-size-5"
+                            svgIcon="heroicons_solid:chevron-right"
+                        ></mat-icon>
+                        <span class="text-secondary ml-1">{{ 'profile' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button mat-icon-button class="mx-4" (click)="toggleShow()">
+        <mat-icon
+            [svgIcon]="visible ? 'mat_solid:menu_open' : 'mat_solid:menu_book'"
+        ></mat-icon>
+    </button>
+    <!-- Main -->
+    <div class="bg-card flex overflow-hidden rounded shadow">
+        <!-- Sidebar -->
+
+        <div
+            class="w-1/3 bg-white dark:bg-transparent"
+            [class.visible]="visible"
+            [class.invisible]="!visible"
+        >
+            <button
+                (click)="toggleActiveTab(0)"
+                [class]="
+                    activeTab == 0
+                        ? 'bg-slate-100 transition-colors dark:bg-slate-900'
+                        : null
+                "
+                class="w-full items-center gap-4 border-b px-4 py-2 text-center sm:px-10 sm:py-5 md:flex md:text-left"
+            >
+                <mat-icon
+                    svgIcon="heroicons_outline:user-circle"
+                    class="text-secondary icon-size-8"
+                    [class]="activeTab == 0 ? 'text-primary-500' : null"
+                ></mat-icon>
+                <div>
+                    <h3 class="text-base md:text-xl">Account</h3>
+                    <p class="text-secondary text-md">
+                        Update personal information
+                    </p>
+                </div>
+            </button>
+            <button
+                (click)="toggleActiveTab(1)"
+                [class]="
+                    activeTab == 1
+                        ? 'bg-slate-100 transition-colors dark:bg-slate-900'
+                        : null
+                "
+                class="w-full items-center gap-4 border-b px-4 py-2 text-center sm:px-10 sm:py-5 md:flex md:text-left"
+            >
+                <mat-icon
+                    svgIcon="heroicons_outline:lock-closed"
+                    class="text-secondary icon-size-8"
+                    [class]="activeTab == 1 ? 'text-primary-500' : null"
+                ></mat-icon>
+                <div>
+                    <h3 class="text-base md:text-xl">Security</h3>
+                    <p class="text-secondary text-md">Update password</p>
+                </div>
+            </button>
+        </div>
+
+        <div class="w-full border-l bg-slate-50 p-8 dark:bg-transparent">
+            <!-- Account -->
+            <account-tab *ngIf="activeTab == 0"></account-tab>
+            <!-- Security -->
+            <password-tab *ngIf="activeTab == 1"></password-tab>
+        </div>
+    </div>
+</div>

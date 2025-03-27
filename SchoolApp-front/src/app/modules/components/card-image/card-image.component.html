@@ -1,0 +1,98 @@
+<div>
+    <div
+        class="flex flex-row items-center justify-center rounded-2xl"
+        fxFlexFill
+    >
+        <div class="rounded-2xl" (click)="openPreviewDialog(computedSrc())">
+            <fuse-card class="flex flex-col">
+                <div class="relative w-full">
+                    <img
+                        class="w-full object-cover"
+                        [src]="computedSrc() || 'images/no-image.png'"
+                    />
+                </div>
+
+                <div class="my-2 flex items-center justify-center">
+                    @if (useList() && src()) {
+                        <div
+                            class="inline-flex w-full items-center justify-center"
+                        >
+                            <button
+                                class="px-6"
+                                mat-icon-button
+                                color="accent"
+                                (click)="previous(); $event.stopPropagation()"
+                            >
+                                <mat-icon
+                                    svgIcon="mat_outline:arrow_back"
+                                ></mat-icon>
+                            </button>
+
+                            <button
+                                class="px-6"
+                                mat-icon-button
+                                color="accent"
+                                (click)="next(); $event.stopPropagation()"
+                            >
+                                <mat-icon
+                                    svgIcon="mat_outline:arrow_forward"
+                                ></mat-icon>
+                            </button>
+                        </div>
+                    }
+
+                    @if (src() && !readOnly()) {
+                        <div class="absolute bottom-0 right-0 p-2">
+                            <button
+                                mat-icon-button
+                                (click)="
+                                    removeFile(computedSrc());
+                                    $event.stopPropagation()
+                                "
+                                color="warn"
+                            >
+                                <mat-icon
+                                    class="text-white"
+                                    [svgIcon]="'heroicons_outline:trash'"
+                                ></mat-icon>
+                            </button>
+                        </div>
+                    }
+                </div>
+            </fuse-card>
+            @if (useWaterMarks && src()) {
+                <div class="flex justify-center">
+                    <div class="py-4 text-md font-semibold">
+                        Imagem Meramente Ilustrativa
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    @if (!readOnly()) {
+        <div
+            class="p flex flex-row items-center justify-center rounded-2xl py-5"
+            fxFlexFill
+        >
+            <button
+                class="ml-3 bg-green-700 px-6 text-white"
+                mat-raised-button
+                (click)="fileInput.click()"
+            >
+                <mat-icon
+                    class="text-secondary icon-size-5"
+                    svgIcon="mat_solid:upload"
+                ></mat-icon
+                >Upload Image
+            </button>
+        </div>
+    }
+</div>
+<input
+    id="file-input"
+    #fileInput
+    class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
+    type="file"
+    accept="image/jpeg, image/png"
+    (change)="onFileSelected($event)"
+/>

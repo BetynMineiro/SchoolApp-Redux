@@ -1,0 +1,143 @@
+<h2 class="mb-4 text-2xl font-bold">Change Password</h2>
+<form
+    [formGroup]="passwordForm"
+    class="flex flex-col"
+    #passwordFormNgForm="ngForm"
+>
+    <div class="grid grid-cols-1 gap-x-4 md:grid-cols-2 lg:grid-cols-3">
+        <div class="col-span-1 flex w-1/2 md:col-span-2 lg:col-span-3">
+            <mat-form-field class="flex-auto text-lg md:text-xl">
+                <mat-label>New Password</mat-label>
+                <input matInput formControlName="newPassword" type="password" />
+                <mat-error
+                    *ngIf="
+                        passwordForm.get('newPassword').hasError('required') &&
+                        passwordForm.get('newPassword').touched
+                    "
+                >
+                    This field is required
+                </mat-error>
+                <mat-icon
+                    class="icon-size-5"
+                    matPrefix
+                    svgIcon="mat_outline:password"
+                ></mat-icon>
+            </mat-form-field>
+        </div>
+        <div class="col-span-1 flex w-1/2 md:col-span-2 lg:col-span-3">
+            <mat-form-field class="flex-auto text-lg md:text-xl">
+                <mat-label>Confirm New Password</mat-label>
+                <input
+                    matInput
+                    formControlName="newPasswordConfirm"
+                    type="password"
+                />
+                <mat-error
+                    *ngIf="
+                        passwordForm
+                            .get('newPasswordConfirm')
+                            .hasError('required') &&
+                        passwordForm.get('newPasswordConfirm').touched
+                    "
+                >
+                    This field is required
+                </mat-error>
+                <mat-error
+                    *ngIf="
+                        passwordForm
+                            .get('newPasswordConfirm')
+                            .hasError('mustMatch') &&
+                        passwordForm.get('newPasswordConfirm').touched
+                    "
+                >
+                    Passwords do not match.
+                </mat-error>
+                <mat-error
+                    *ngIf="
+                        passwordForm
+                            .get('newPasswordConfirm')
+                            .hasError('pattern') &&
+                        passwordForm.get('newPasswordConfirm').touched
+                    "
+                >
+                    The password must contain:
+                    <span
+                        *ngIf="
+                            !passwordForm
+                                .get('newPasswordConfirm')
+                                .value?.match('^(?=.*[A-Z])')
+                        "
+                    >
+                        at least one uppercase letter,
+                    </span>
+                    <span
+                        *ngIf="
+                            !passwordForm
+                                .get('newPasswordConfirm')
+                                .value?.match('(?=.*[a-z])')
+                        "
+                    >
+                        at least one lowercase letter,
+                    </span>
+                    <span
+                        *ngIf="
+                            !passwordForm
+                                .get('newPasswordConfirm')
+                                .value?.match('(.*[0-9].*)')
+                        "
+                    >
+                        at least one number,
+                    </span>
+                    <span
+                        *ngIf="
+                            !passwordForm
+                                .get('newPasswordConfirm')
+                                .value?.match('(?=.*[!@#$%^&*])')
+                        "
+                    >
+                        at least one special character,
+                    </span>
+                    <span
+                        *ngIf="
+                            !passwordForm
+                                .get('newPasswordConfirm')
+                                .value?.match('.{8,}')
+                        "
+                    >
+                        at least 8 characters.
+                    </span>
+                </mat-error>
+                <mat-icon
+                    class="icon-size-5"
+                    matPrefix
+                    svgIcon="mat_outline:password"
+                ></mat-icon>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="-mx-8 mt-8 flex items-center justify-end border-t px-8 py-5">
+        <div class="mt-1.5 inline-flex w-full items-end justify-end">
+            <button
+                class="ml-3 px-6"
+                mat-raised-button
+                color="accent"
+                [routerLink]="['/admin/user']"
+            >
+                Back
+            </button>
+            <button
+                (click)="save()"
+                [disabled]="passwordForm.invalid || passwordForm.disabled"
+                class="ml-3 px-6 text-white"
+                mat-raised-button
+                color="primary"
+            >
+                <mat-icon
+                    class="text-secondary icon-size-5"
+                    svgIcon="heroicons_solid:check"
+                ></mat-icon
+                >Save
+            </button>
+        </div>
+    </div>
+</form>

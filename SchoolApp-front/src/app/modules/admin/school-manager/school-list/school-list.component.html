@@ -1,0 +1,69 @@
+<div class="flex min-w-0 flex-auto flex-col">
+    <!-- Header -->
+    <div
+        class="flex flex-0 flex-col border-b bg-slate-50 p-6 dark:bg-transparent sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8"
+    >
+        <div class="min-w-0 flex-1">
+            <!-- Breadcrumbs -->
+            <div>
+                <div class="hidden flex-wrap items-center font-medium sm:flex">
+                    <div>
+                        <a
+                            [routerLink]="['/']"
+                            class="text-secondary whitespace-nowrap font-bold"
+                            >Home</a
+                        >
+                    </div>
+                    <div class="ml-1 flex items-center whitespace-nowrap">
+                        <mat-icon
+                            class="text-secondary icon-size-5"
+                            svgIcon="heroicons_solid:chevron-right"
+                        ></mat-icon>
+                        <span class="text-secondary ml-1"> schools </span>
+                    </div>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2
+                    class="truncate text-3xl font-extrabold leading-7 tracking-tight sm:leading-10 md:text-4xl"
+                >
+                    All Schools
+                </h2>
+            </div>
+        </div>
+        <!-- Actions -->
+        <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
+            <button
+                mat-raised-button
+                [color]="'primary'"
+                class="text-white"
+                (click)="createNewSchool()"
+            >
+                <mat-icon
+                    class="mr-2 icon-size-5"
+                    [svgIcon]="'heroicons_solid:plus'"
+                ></mat-icon>
+                Add new school
+            </button>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto bg-white p-10 dark:bg-transparent sm:px-4 sm:pb-4">
+        @if (this.schoolList()) {
+            <caps-table
+                [showActions]="true"
+                [showSelections]="false"
+                [showUpdateAction]="true"
+                [showDeleteAction]="true"
+                [columnsHeaders]="tableColumn"
+                [columnsData]="this.schoolList()"
+                (onSearch)="refreshSchoolList($event)"
+                (onPageChanged)="refreshSchoolList($event)"
+                (onDeleteItem)="deleteSchool($event)"
+                (onUpdateItem)="updateSchool($event)"
+            ></caps-table>
+        }
+    </div>
+</div>

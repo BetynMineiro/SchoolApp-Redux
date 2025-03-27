@@ -1,0 +1,231 @@
+<h2 class="mb-4 text-2xl font-bold">Account Settings</h2>
+<form
+    [formGroup]="userForm"
+    #userFormNgForm="ngForm"
+    class="flex flex-col"
+    enctype="multipart/form-data"
+>
+    <div class="grid grid-cols-1 gap-x-4 md:grid-cols-2 xl:grid-cols-3">
+        <div
+            class="group relative mb-6 flex flex-auto sm:col-span-2 xl:col-span-3"
+        >
+            <div
+                class="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-2 border-primary-500 object-cover sm:h-40 sm:w-40"
+            >
+                <!-- Upload / Remove avatar -->
+                <div
+                    class="absolute bottom-0 left-0 right-0 z-10 h-1/2 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:h-2/6"
+                >
+                    <div
+                        class="absolute bottom-0 left-0 right-0 z-20 mt-4 flex items-center justify-center pb-2"
+                    >
+                        <div>
+                            <label
+                                class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-hover"
+                                for="avatar-file-input"
+                                matRipple
+                            >
+                                <input
+                                    id="avatar-file-input"
+                                    class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
+                                    type="file"
+                                    accept="image/jpeg, image/png"
+                                    (change)="onFileSelected($event)"
+                                />
+                                <mat-icon
+                                    class="text-white icon-size-6"
+                                    svgIcon="heroicons_outline:camera"
+                                ></mat-icon>
+                            </label>
+                        </div>
+                        <div>
+                            <button mat-icon-button (click)="removeAvatar()">
+                                <mat-icon
+                                    class="text-white icon-size-6"
+                                    svgIcon="heroicons_outline:trash"
+                                ></mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Image/Letter -->
+                @if (this.fullUser()) {
+                    <img
+                        class="h-full w-full overflow-hidden object-cover"
+                        [src]="this.fullUser().avatar"
+                    />
+                }
+            </div>
+        </div>
+
+        <mat-form-field
+            class="gt-xs:pr-3 col-span-2 flex-auto text-lg md:text-xl"
+        >
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="fullName" />
+            <mat-error *ngIf="userForm.get('fullName').hasError('required')">
+                Full name is required
+            </mat-error>
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                [svgIcon]="'mat_outline:short_text'"
+            ></mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>CPF</mat-label>
+            <input
+                matInput
+                placeholder="000.000.00-00"
+                formControlName="taxDocument"
+                mask="000.000.000-00"
+            />
+            <mat-error *ngIf="userForm.get('taxDocument').hasError('required')">
+                Tax document is required
+            </mat-error>
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                svgIcon="heroicons_outline:finger-print"
+            ></mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="col-span-2 flex-auto text-lg md:text-xl">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" readonly />
+            <mat-error *ngIf="userForm.get('email').hasError('required')">
+                Email is required
+            </mat-error>
+            <mat-error *ngIf="userForm.get('email').hasError('email')">
+                Invalid email
+            </mat-error>
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                [svgIcon]="'mat_outline:email'"
+            ></mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>Date of Birth</mat-label>
+            <input
+                matInput
+                [matDatepicker]="picker"
+                formControlName="birthDay"
+                [max]="today"
+            />
+            <mat-datepicker-toggle
+                matSuffix
+                [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field
+            class="gt-xs:pr-3 col-span-2 flex-auto text-lg md:text-xl"
+        >
+            <mat-label>Social Name</mat-label>
+            <input matInput formControlName="socialName" />
+
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                [svgIcon]="'mat_outline:short_text'"
+            ></mat-icon>
+        </mat-form-field>
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>Gender</mat-label>
+            <mat-select formControlName="gender">
+                <mat-option
+                    *ngFor="let option of genderOptions"
+                    [value]="option.key"
+                >
+                    {{ option.value }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-span-2 flex-auto text-lg md:text-xl">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" />
+        </mat-form-field>
+
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>Phone Number</mat-label>
+            <input
+                matInput
+                placeholder="(xx) xxxxx-xxxx"
+                formControlName="phoneNumber"
+            />
+        </mat-form-field>
+
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>Access Profile</mat-label>
+            <mat-select formControlName="profileType">
+                <mat-option
+                    *ngFor="let option of profileTypeOptions"
+                    [value]="option.key"
+                >
+                    {{ option.value }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        @if (fullUser()?.profileType == profileType.SchoolManager) {
+            <mat-form-field class="flex-auto text-lg md:text-xl">
+                <mat-label>School</mat-label>
+                <mat-select
+                    formControlName="managedSchoolId"
+                    [required]="
+                        fullUser().profileType == profileType.SchoolManager
+                    "
+                >
+                    <mat-option
+                        *ngFor="let option of schoolList()"
+                        [value]="option.id"
+                    >
+                        {{ option.fullName }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        }
+        <mat-form-field class="flex-auto text-lg md:text-xl">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+                <mat-option
+                    *ngFor="let option of statusOptions"
+                    [value]="option.key"
+                >
+                    {{ option.value }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div class="-mx-8 mt-8 flex items-center justify-end border-t px-8 py-5">
+        <div class="mt-1.5 inline-flex w-full items-end justify-end">
+            <button
+                class="ml-3 px-6"
+                mat-raised-button
+                color="accent"
+                [routerLink]="['/admin/user']"
+            >
+                Back
+            </button>
+            <button
+                (click)="save()"
+                [disabled]="userForm.invalid || userForm.disabled"
+                class="ml-3 px-6 text-white"
+                mat-raised-button
+                color="primary"
+            >
+                <mat-icon
+                    class="text-secondary icon-size-5"
+                    svgIcon="heroicons_solid:check"
+                ></mat-icon
+                >Save
+            </button>
+        </div>
+    </div>
+</form>

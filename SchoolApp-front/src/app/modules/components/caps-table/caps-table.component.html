@@ -1,0 +1,525 @@
+<div class="flex w-full flex-auto flex-col">
+    <div class="flex-auto pt-6 sm:pt-6">
+        <div class="rounded-2xl">
+            <div class="-mt-8 overflow-auto">
+                @if (showSearchField) {
+                    <div
+                        class="sticky left-0 gap-2 border-b bg-gray-200 p-2 dark:bg-gray-800"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between center"
+                    >
+                        <h2
+                            class="truncate pl-2 leading-7 tracking-tight sm:leading-10"
+                            fxFlex="none"
+                        >
+                            <span *ngIf="selection.isEmpty()">{{
+                                tableHeaderText
+                            }}</span>
+                            <span *ngIf="selection.hasValue()"
+                                >{{ selection.selected.length }}
+                                {{ selectedPrefixText
+                                }}<span *ngIf="selection.selected.length > 1"
+                                    >s</span
+                                >
+                                selected<span
+                                    *ngIf="selection.selected.length > 1"
+                                    >s</span
+                                ></span
+                            >
+                        </h2>
+
+                        <!-- <span fxFlex></span> -->
+
+                        <div
+                            class="flex-1 rounded-md border bg-gray-50 px-4"
+                            fxFlex.lt-md="auto"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                        >
+                            <input
+                                [formControl]="searchCtrl"
+                                matInput
+                                class="p2-4 w-full border-0 bg-transparent py-1 outline-none"
+                                placeholder="Search..."
+                                type="search"
+                            />
+                        </div>
+                    </div>
+                }
+
+                @if (hasData) {
+                    <table
+                        @stagger
+                        [dataSource]="dataSource"
+                        class="w-full"
+                        mat-table
+                        matSort
+                        multiTemplateDataRows
+                    >
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="checkbox">
+                            <th *matHeaderCellDef mat-header-cell>
+                                <mat-checkbox
+                                    (change)="$event ? masterToggle() : null"
+                                    [checked]="
+                                        selection.hasValue() && isAllSelected()
+                                    "
+                                    [indeterminate]="
+                                        selection.hasValue() && !isAllSelected()
+                                    "
+                                    color="primary"
+                                >
+                                </mat-checkbox>
+                            </th>
+                            <td *matCellDef="let row" class="w-4" mat-cell>
+                                <mat-checkbox
+                                    (change)="
+                                        $event ? selection.toggle(row) : null
+                                    "
+                                    (click)="$event.stopPropagation()"
+                                    [checked]="selection.isSelected(row)"
+                                    color="primary"
+                                >
+                                </mat-checkbox>
+                            </td>
+                        </ng-container>
+
+                        <!-- Date Columns -->
+                        <ng-container
+                            *ngFor="
+                                let column of columns;
+                                trackBy: trackByProperty
+                            "
+                        >
+                            <ng-container
+                                *ngIf="column.type === 'date'"
+                                [matColumnDef]="column.property"
+                            >
+                                <th
+                                    *matHeaderCellDef
+                                    class="uppercase"
+                                    mat-header-cell
+                                    mat-sort-header
+                                >
+                                    {{ column.label }}
+                                </th>
+                                <td
+                                    *matCellDef="let row"
+                                    [ngClass]="column.cssClasses"
+                                    mat-cell
+                                >
+                                    {{
+                                        row[column.property]
+                                            | date: 'dd/MM/yyyy HH:mm'
+                                    }}
+                                </td>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- Text Columns -->
+                        <ng-container
+                            *ngFor="
+                                let column of columns;
+                                trackBy: trackByProperty
+                            "
+                        >
+                            <ng-container
+                                *ngIf="column.type === 'text'"
+                                [matColumnDef]="column.property"
+                            >
+                                <th
+                                    *matHeaderCellDef
+                                    class="uppercase"
+                                    mat-header-cell
+                                    mat-sort-header
+                                >
+                                    {{ column.label }}
+                                </th>
+                                <td
+                                    *matCellDef="let row"
+                                    [ngClass]="column.cssClasses"
+                                    mat-cell
+                                >
+                                    <div
+                                        [innerHTML]="
+                                            truncateText(
+                                                row[column.property],
+                                                123
+                                            )
+                                        "
+                                    ></div>
+                                </td>
+                            </ng-container>
+                        </ng-container>
+                        <!-- Image Columns -->
+                        <ng-container
+                            *ngFor="
+                                let column of columns;
+                                trackBy: trackByProperty
+                            "
+                        >
+                            <ng-container
+                                *ngIf="column.type === 'image'"
+                                [matColumnDef]="column.property"
+                            >
+                                <th
+                                    *matHeaderCellDef
+                                    class="uppercase"
+                                    mat-header-cell
+                                    mat-sort-header
+                                >
+                                    {{ column.label }}
+                                </th>
+                                <td
+                                    *matCellDef="let row"
+                                    [ngClass]="column.cssClasses"
+                                    mat-cell
+                                >
+                                    <div class="mr-2 flex">
+                                        @if (row[column.property]) {
+                                            <img
+                                                class="ring-offset -mr-1 box-border rounded-full bg-white ring-2 ring-white icon-size-8 dark:bg-transparent dark:ring-transparent"
+                                                (click)="
+                                                    openPreviewDialog(
+                                                        row[column.property]
+                                                    )
+                                                "
+                                                [src]="row[column.property]"
+                                            />
+                                        } @else {
+                                            <mat-icon
+                                                class="ring-offset mx-2 box-border rounded-full bg-white ring-2 ring-white icon-size-8 dark:bg-transparent dark:ring-transparent"
+                                                svgIcon="mat_outline:image"
+                                            ></mat-icon>
+                                        }
+                                    </div>
+                                </td>
+                            </ng-container>
+                        </ng-container>
+                        <!-- Image List Columns -->
+                        <ng-container
+                            *ngFor="
+                                let column of columns;
+                                trackBy: trackByProperty
+                            "
+                        >
+                            <ng-container
+                                *ngIf="column.type === 'imageList'"
+                                [matColumnDef]="column.property"
+                            >
+                                <th
+                                    *matHeaderCellDef
+                                    class="uppercase"
+                                    mat-header-cell
+                                    mat-sort-header
+                                >
+                                    {{ column.label }}
+                                </th>
+                                <td
+                                    *matCellDef="let row"
+                                    [ngClass]="column.cssClasses"
+                                    mat-cell
+                                >
+                                    <div class="mr-2 flex">
+                                        @if (row[column.property]) {
+                                            @for (
+                                                item of row[column.property];
+                                                track $index
+                                            ) {
+                                                <img
+                                                    class="ring-offset -mr-1 box-border rounded-full bg-white ring-2 ring-white icon-size-8 dark:bg-transparent dark:ring-transparent"
+                                                    (click)="
+                                                        openPreviewDialog(item)
+                                                    "
+                                                    [src]="item"
+                                                />
+                                            }
+                                        } @else {
+                                            <mat-icon
+                                                class="ring-offset mx-2 box-border rounded-full bg-white ring-2 ring-white icon-size-8 dark:bg-transparent dark:ring-transparent"
+                                                svgIcon="mat_outline:image"
+                                            ></mat-icon>
+                                        }
+                                    </div>
+                                </td>
+                            </ng-container>
+                        </ng-container>
+                        <!-- Text Html -->
+                        <ng-container
+                            *ngFor="
+                                let column of columns;
+                                trackBy: trackByProperty
+                            "
+                        >
+                            <ng-container
+                                *ngIf="column.type === 'html'"
+                                [matColumnDef]="column.property"
+                            >
+                                <th
+                                    *matHeaderCellDef
+                                    class="uppercase"
+                                    mat-header-cell
+                                    mat-sort-header
+                                >
+                                    {{ column.label }}
+                                </th>
+                                <td
+                                    *matCellDef="let row"
+                                    [ngClass]="column.cssClasses"
+                                    mat-cell
+                                >
+                                    <div
+                                        [innerHTML]="row[column.property]"
+                                    ></div>
+                                </td>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- Currency Columns -->
+                        <ng-container
+                            *ngFor="
+                                let column of columns;
+                                trackBy: trackByProperty
+                            "
+                        >
+                            <ng-container
+                                *ngIf="column.type === 'currency'"
+                                [matColumnDef]="column.property"
+                            >
+                                <th
+                                    *matHeaderCellDef
+                                    class="uppercase"
+                                    mat-header-cell
+                                    mat-sort-header
+                                >
+                                    {{ column.label }}
+                                </th>
+                                <td
+                                    *matCellDef="let row"
+                                    [ngClass]="column.cssClasses"
+                                    mat-cell
+                                >
+                                    {{ row[column.property] | currency: 'BRL' }}
+                                </td>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- Array Columns -->
+                        <ng-container
+                            *ngFor="
+                                let column of columns;
+                                trackBy: trackByProperty
+                            "
+                        >
+                            <ng-container
+                                *ngIf="column.type === 'array'"
+                                [matColumnDef]="column.property"
+                            >
+                                <th
+                                    *matHeaderCellDef
+                                    class="uppercase"
+                                    mat-header-cell
+                                    mat-sort-header
+                                >
+                                    {{ column.label }}
+                                </th>
+                                <td
+                                    *matCellDef="let row"
+                                    [ngClass]="column.cssClasses"
+                                    mat-cell
+                                >
+                                    <mat-chip-list>
+                                        <mat-chip
+                                            *ngFor="
+                                                let item of row[column.property]
+                                            "
+                                            [class]="column.cssDetailClass"
+                                        >
+                                            {{ item.name }}</mat-chip
+                                        >
+                                    </mat-chip-list>
+                                </td>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- Boolean Columns -->
+                        <ng-container
+                            *ngFor="
+                                let column of columns;
+                                trackBy: trackByProperty
+                            "
+                        >
+                            <ng-container
+                                *ngIf="column.type === 'boolean'"
+                                [matColumnDef]="column.property"
+                            >
+                                <th
+                                    *matHeaderCellDef
+                                    class="uppercase"
+                                    mat-header-cell
+                                    mat-sort-header
+                                >
+                                    {{ column.label }}
+                                </th>
+                                <td *matCellDef="let row" class="w-4" mat-cell>
+                                    <mat-checkbox
+                                        disabled
+                                        [ngClass]="column.cssClasses"
+                                        [checked]="row[column.property]"
+                                        color="primary"
+                                    >
+                                    </mat-checkbox>
+                                </td>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- Enum Columns -->
+                        <ng-container
+                            *ngFor="
+                                let column of columns;
+                                trackBy: trackByProperty
+                            "
+                        >
+                            <ng-container
+                                *ngIf="column.type === 'enum'"
+                                [matColumnDef]="column.property"
+                            >
+                                <th
+                                    *matHeaderCellDef
+                                    class="uppercase"
+                                    mat-header-cell
+                                    mat-sort-header
+                                >
+                                    {{ column.label }}
+                                </th>
+                                <td
+                                    *matCellDef="let row"
+                                    [ngClass]="column.cssClasses"
+                                    mat-cell
+                                >
+                                    {{
+                                        getEnumDescription(
+                                            row[column.property],
+                                            column.enumData
+                                        )
+                                    }}
+                                </td>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- Action Column -->
+                        <ng-container matColumnDef="actions">
+                            <th
+                                *matHeaderCellDef
+                                mat-header-cell
+                                mat-sort-header
+                            ></th>
+                            <td
+                                *matCellDef="let row"
+                                class="text-secondary w-10"
+                                mat-cell
+                            >
+                                <button
+                                    [color]="'primary'"
+                                    (click)="$event.stopPropagation()"
+                                    [matMenuTriggerData]="{ customer: row }"
+                                    [matMenuTriggerFor]="actionsMenu"
+                                    mat-icon-button
+                                    type="button"
+                                >
+                                    <mat-icon
+                                        svgIcon="mat_outline:more_vert"
+                                    ></mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <tr
+                            *matHeaderRowDef="visibleColumns"
+                            mat-header-row
+                        ></tr>
+                        <tr
+                            (dblclick)="
+                                enableUpdateOnDoubleClick && updateItem(row)
+                            "
+                            *matRowDef="let row; columns: visibleColumns"
+                            @fadeInUp
+                            class="hover:bg-gray-100 dark:hover:bg-gray-700"
+                            mat-row
+                        ></tr>
+                    </table>
+                } @else {
+                    <div
+                        class="flex flex-auto flex-col items-center justify-center px-8 py-12 sm:justify-start"
+                    >
+                        <div
+                            class="flex h-14 w-14 flex-0 items-center justify-center rounded-full bg-warn-100"
+                        >
+                            <mat-icon
+                                class="text-primary-500-700"
+                                color="warn"
+                                [svgIcon]="
+                                    'heroicons_outline:exclamation-circle'
+                                "
+                            ></mat-icon>
+                        </div>
+                        <div class="mt-5 text-4xl font-semibold tracking-tight">
+                            No results
+                        </div>
+                    </div>
+                }
+                <mat-paginator
+                    [length]="this.page().length"
+                    [pageSizeOptions]="pageSizeOptions"
+                    [pageSize]="this.page().pageSize"
+                    [pageIndex]="this.page().pageIndex"
+                    showFirstLastButtons
+                    class="sticky left-0"
+                    (page)="pageChange($event)"
+                ></mat-paginator>
+            </div>
+        </div>
+    </div>
+</div>
+
+<mat-menu #actionsMenu="matMenu" xPosition="before" yPosition="below">
+    <ng-template let-customer="customer" matMenuContent>
+        <button
+            *ngIf="showUpdateAction"
+            [color]="'primary'"
+            (click)="updateItem(customer)"
+            mat-menu-item
+        >
+            <mat-icon
+                class="text-secondary icon-size-5"
+                [svgIcon]="'heroicons_solid:pencil'"
+            ></mat-icon>
+            <span>{{ 'Edit' }}</span>
+        </button>
+        <button
+            *ngIf="showDeleteAction"
+            [color]="'warn'"
+            (click)="deleteItem(customer)"
+            mat-menu-item
+        >
+            <mat-icon
+                class="text-secondary icon-size-5"
+                [svgIcon]="'heroicons_solid:trash'"
+            ></mat-icon>
+            <span>{{ 'Delete' }}</span>
+        </button>
+
+        <button
+            *ngIf="showCustomAction"
+            (click)="customAction(customer)"
+            mat-menu-item
+        >
+            <mat-icon
+                *ngIf="customActionIcon"
+                class="text-secondary icon-size-5"
+                [svgIcon]="customActionIcon"
+            ></mat-icon>
+            <span>{{ customActionTitle }}</span>
+        </button>
+    </ng-template>
+</mat-menu>

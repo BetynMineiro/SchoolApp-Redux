@@ -1,0 +1,98 @@
+<div class="flex min-w-0 flex-auto flex-col">
+    <!-- Header -->
+    <div
+        class="flex flex-0 flex-col border-b bg-slate-50 p-6 dark:bg-transparent sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-4"
+    >
+        <div class="min-w-0 flex-1">
+            <!-- Breadcrumbs -->
+            @if (!isSchoolManager()) {
+                <div>
+                    <div
+                        class="hidden flex-wrap items-center font-medium sm:flex"
+                    >
+                        <div>
+                            <a
+                                [routerLink]="['/']"
+                                class="text-secondary whitespace-nowrap font-bold"
+                                >Overview</a
+                            >
+                        </div>
+                        <div class="ml-1 flex items-center whitespace-nowrap">
+                            <mat-icon
+                                class="text-secondary icon-size-5"
+                                [svgIcon]="'heroicons_solid:chevron-right'"
+                            ></mat-icon>
+                            <a
+                                [routerLink]="['/admin/school']"
+                                class="text-secondary ml-1 font-bold"
+                                >Schools</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- Title -->
+            <div class="mt-2">
+                <h2
+                    class="truncate text-3xl font-extrabold leading-7 tracking-tight sm:leading-10 md:text-4xl"
+                >
+                    {{ fullSchool()?.fullName }}
+                </h2>
+            </div>
+        </div>
+    </div>
+    <button mat-icon-button class="mx-4" (click)="toggleShow()">
+        <mat-icon
+            [svgIcon]="visible ? 'mat_solid:menu_open' : 'mat_solid:menu_book'"
+        ></mat-icon>
+    </button>
+    <!-- Main -->
+    <div class="bg-card flex overflow-hidden rounded shadow">
+        <!-- Sidebar Menu -->
+        <div
+            class="w-1/3 bg-white dark:bg-transparent"
+            [class.visible]="visible"
+            [class.invisible]="!visible"
+        >
+            @for (item of schoolModulesOptions; track $index) {
+                <button
+                    (click)="toggleActiveTab(item.key)"
+                    [class]="
+                        activeTab() == item.key
+                            ? 'bg-slate-100 transition-colors dark:bg-slate-900'
+                            : null
+                    "
+                    class="w-full items-center gap-4 border-b px-4 py-2 text-center sm:px-10 sm:py-5 md:flex md:text-left"
+                >
+                    <div>
+                        <h3 class="text-base md:text-xl">
+                            {{ item.value.title }}
+                        </h3>
+                        <p class="text-secondary text-md">
+                            {{ item.value.subTitle }}
+                        </p>
+                    </div>
+                </button>
+            }
+        </div>
+
+        <div class="w-full border-l bg-slate-50 p-8 dark:bg-transparent">
+            <div watermark [watermarkOptions]="options()">
+                @switch (activeTab()) {
+                    @case (SchoolModules.Account) {
+                        <tab-school-account
+                            [schoolId]="this.schoolId()"
+                            [readOnly]="readOnly()"
+                        ></tab-school-account>
+                    }
+                    @default {
+                        <maintenance
+                            title="We are under development."
+                            subTitle="Sorry for the inconvenience, we will have news soon!"
+                        ></maintenance>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

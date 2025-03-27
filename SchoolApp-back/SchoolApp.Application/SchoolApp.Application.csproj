@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="11.10.0" />
+      <PackageReference Include="MediatR" Version="12.4.1" />
+      <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ApplicationServices\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+        <HintPath>..\..\..\..\.dotnet\shared\Microsoft.AspNetCore.App\8.0.5\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SchoolApp.Domain\SchoolApp.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="UserCases\Clinic\GetClinicById\**" />
+      <Compile Remove="UserCases\Clinic\GetAll\**" />
+      <Compile Remove="UserCases\Clinic\GetById\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="UserCases\Clinic\GetClinicById\**" />
+      <EmbeddedResource Remove="UserCases\Clinic\GetAll\**" />
+      <EmbeddedResource Remove="UserCases\Clinic\GetById\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="UserCases\Clinic\GetClinicById\**" />
+      <None Remove="UserCases\Clinic\GetAll\**" />
+      <None Remove="UserCases\Clinic\GetById\**" />
+    </ItemGroup>
+
+</Project>

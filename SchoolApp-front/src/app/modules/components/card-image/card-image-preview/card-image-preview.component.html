@@ -1,0 +1,15 @@
+<div class="rounded-2xl">
+    <div class="flex justify-center">
+        <div class="w-120 rounded-2xl">
+            <img class="object-cover" [src]="src()" />
+        </div>
+    </div>
+
+    @if (useWaterMarks) {
+        <div class="flex justify-center">
+            <div class="py-4 text-2xl font-semibold">
+                Image for Illustrative Purposes Only
+            </div>
+        </div>
+    }
+</div>

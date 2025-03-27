@@ -1,0 +1,149 @@
+<div class="flex min-w-0 flex-auto flex-col">
+    <!-- Header -->
+    <div
+        class="flex flex-0 flex-col border-b bg-slate-50 p-6 dark:bg-transparent sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8"
+    >
+        <div class="min-w-0 flex-1">
+            <!-- Breadcrumbs -->
+            <div>
+                <div class="hidden flex-wrap items-center font-medium sm:flex">
+                    <div>
+                        <a
+                            [routerLink]="['/']"
+                            class="text-secondary whitespace-nowrap font-bold"
+                            >Overview</a
+                        >
+                    </div>
+                    <div class="ml-1 flex items-center whitespace-nowrap">
+                        <mat-icon
+                            class="text-secondary icon-size-5"
+                            [svgIcon]="'heroicons_solid:chevron-right'"
+                        ></mat-icon>
+                        <a
+                            [routerLink]="['/admin/school']"
+                            class="text-secondary ml-1 font-bold"
+                            >Schools</a
+                        >
+                    </div>
+                    <div class="ml-1 flex items-center whitespace-nowrap">
+                        <mat-icon
+                            class="text-secondary icon-size-5"
+                            [svgIcon]="'heroicons_solid:chevron-right'"
+                        ></mat-icon>
+                        <span class="text-secondary ml-1"> New </span>
+                    </div>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2
+                    class="truncate text-3xl font-extrabold leading-7 tracking-tight sm:leading-10 md:text-4xl"
+                >
+                    New School
+                </h2>
+            </div>
+        </div>
+    </div>
+    <!-- Main -->
+
+    <form
+        [formGroup]="schoolForm"
+        #schoolFormNgForm="ngForm"
+        class="bg-card flex flex-col overflow-hidden rounded px-10 pt-8 shadow dark:bg-transparent"
+        enctype="multipart/form-data"
+    >
+        <div class="grid grid-cols-1 gap-x-4 md:grid-cols-2 xl:grid-cols-3">
+            <mat-form-field class="gt-xs:pr-3 flex-auto text-lg md:text-xl">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="fullName" />
+                <mat-error
+                    *ngIf="schoolForm.get('fullName').hasError('required')"
+                >
+                    Name is required
+                </mat-error>
+                <mat-icon
+                    class="icon-size-5"
+                    matPrefix
+                    [svgIcon]="'mat_outline:short_text'"
+                ></mat-icon>
+            </mat-form-field>
+
+            <mat-form-field class="flex-auto text-lg md:text-xl">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" />
+                <mat-error *ngIf="schoolForm.get('email').hasError('email')">
+                    Email is invalid
+                </mat-error>
+                <mat-icon
+                    class="icon-size-5"
+                    matPrefix
+                    [svgIcon]="'mat_outline:email'"
+                ></mat-icon>
+            </mat-form-field>
+
+            <mat-form-field class="flex-auto text-lg md:text-xl">
+                <mat-label>Tax Document</mat-label>
+                <input
+                    matInput
+                    placeholder="00.000.000/0001-00"
+                    formControlName="taxDocument"
+                    mask="00.000.000/0001-00"
+                />
+                <mat-error
+                    *ngIf="schoolForm.get('taxDocument').hasError('required')"
+                >
+                    Tax document is required
+                </mat-error>
+                <mat-icon
+                    class="icon-size-5"
+                    matPrefix
+                    svgIcon="heroicons_outline:finger-print"
+                ></mat-icon>
+            </mat-form-field>
+
+            <mat-form-field class="flex-auto text-lg md:text-xl">
+                <mat-label>Address</mat-label>
+                <input matInput formControlName="address" />
+            </mat-form-field>
+
+            <mat-form-field class="flex-auto text-lg md:text-xl">
+                <mat-label>Phone Number</mat-label>
+                <input
+                    matInput
+                    placeholder="(xx) xxxxx-xxxx"
+                    formControlName="phoneNumber"
+                />
+            </mat-form-field>
+        </div>
+
+        <div
+            class="-mx-8 mt-8 flex items-center justify-end border-t px-8 py-5"
+        >
+            <div class="mt-1.5 inline-flex w-full items-end justify-end">
+                <button
+                    class="ml-3 px-6"
+                    mat-raised-button
+                    color="accent"
+                    [routerLink]="['/admin/school']"
+                >
+                    Back
+                </button>
+                <button
+                    (click)="save()"
+                    [disabled]="schoolForm.invalid || schoolForm.disabled"
+                    class="ml-3 px-6 text-white"
+                    mat-raised-button
+                    color="primary"
+                >
+                    <mat-icon
+                        class="text-secondary icon-size-5"
+                        svgIcon="heroicons_solid:check"
+                    ></mat-icon
+                    >Save
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Main -->
+</div>
